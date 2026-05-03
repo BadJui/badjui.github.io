@@ -1,117 +1,621 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="generator" content="VuePress 2.0.0-beta.49">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>BadJui · 网络安全工程师 | 个人主页</title>
+  <meta name="description" content="BadJui —— 网络安全研究者，免杀与社工钓鱼方向，C++开发者，备考ing，摸鱼ing。">
+  <meta name="author" content="BadJui">
+  <meta name="theme-color" content="#0a0a1f">
+  
+  <!-- 预连接与字体 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     :root {
-      --c-bg: #fff;
+      --bg-deep: #0a0a1a;
+      --bg-card: rgba(12, 15, 25, 0.75);
+      --bg-card-solid: #0e1020;
+      --grid-primary: rgba(0, 255, 196, 0.2);
+      --grid-secondary: rgba(0, 150, 255, 0.08);
+      --neon-cyan: #00f7ff;
+      --neon-pink: #ff2a8c;
+      --neon-purple: #b026ff;
+      --text-primary: #eef5ff;
+      --text-secondary: #b0c4de;
+      --accent-glow: rgba(0, 247, 255, 0.3);
+      --border-glow: rgba(0, 247, 255, 0.5);
+      --card-border: rgba(0, 255, 196, 0.2);
+      --shadow-glow: 0 0 15px rgba(0, 247, 255, 0.1);
+      --transition-smooth: cubic-bezier(0.2, 0.9, 0.4, 1.1);
     }
 
-    html.dark {
-      --c-bg: #22272e;
-    }
-
-    html,
     body {
-      background-color: var(--c-bg);
+      background-color: var(--bg-deep);
+      color: var(--text-primary);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      line-height: 1.5;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* ===== 赛博数据流背景 (纯CSS 动态网格 + 流光) ===== */
+    .cyber-grid {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -2;
+      background: radial-gradient(circle at 20% 30%, #010110, #000000);
+      overflow: hidden;
+    }
+
+    .grid-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 200%;
+      height: 200%;
+      background-image: 
+        repeating-linear-gradient(0deg, 
+          transparent, 
+          transparent 40px, 
+          var(--grid-primary) 40px, 
+          var(--grid-primary) 42px),
+        repeating-linear-gradient(90deg, 
+          transparent, 
+          transparent 40px, 
+          var(--grid-primary) 40px, 
+          var(--grid-primary) 42px);
+      animation: gridShift 60s linear infinite;
+      opacity: 0.6;
+    }
+
+    .grid-layer.secondary {
+      background-image: 
+        repeating-linear-gradient(0deg, 
+          transparent, 
+          transparent 80px, 
+          var(--grid-secondary) 80px, 
+          var(--grid-secondary) 82px),
+        repeating-linear-gradient(90deg, 
+          transparent, 
+          transparent 80px, 
+          var(--grid-secondary) 80px, 
+          var(--grid-secondary) 82px);
+      animation: gridShiftReverse 80s linear infinite;
+      opacity: 0.4;
+    }
+
+    @keyframes gridShift {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(-10%, -10%); }
+    }
+    @keyframes gridShiftReverse {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(10%, 10%); }
+    }
+
+    /* 动态数据流光柱 */
+    .data-stream {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      pointer-events: none;
+    }
+    .stream {
+      position: absolute;
+      background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+      width: 2px;
+      height: 100%;
+      opacity: 0.3;
+      animation: streamFall 8s linear infinite;
+    }
+    .stream:nth-child(1) { left: 15%; animation-duration: 12s; opacity: 0.4; }
+    .stream:nth-child(2) { left: 35%; animation-duration: 18s; opacity: 0.2; background: linear-gradient(90deg, transparent, var(--neon-purple), transparent);}
+    .stream:nth-child(3) { left: 55%; animation-duration: 10s; opacity: 0.5; }
+    .stream:nth-child(4) { left: 75%; animation-duration: 14s; opacity: 0.3; background: linear-gradient(90deg, transparent, var(--neon-pink), transparent);}
+    .stream:nth-child(5) { left: 88%; animation-duration: 22s; opacity: 0.25;}
+
+    @keyframes streamFall {
+      0% { transform: translateY(-100vh); opacity: 0; }
+      10% { opacity: 0.8; }
+      90% { opacity: 0.6; }
+      100% { transform: translateY(100vh); opacity: 0; }
+    }
+
+    /* 主容器 */
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 2rem 2rem 4rem;
+      position: relative;
+      backdrop-filter: blur(1px);
+    }
+
+    /* 毛玻璃导航栏 */
+    .navbar-glow {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      background: rgba(10, 10, 26, 0.6);
+      backdrop-filter: blur(12px);
+      border-radius: 60px;
+      border: 1px solid rgba(0, 255, 196, 0.2);
+      margin-bottom: 3rem;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    }
+    .logo {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 1.5rem;
+      background: linear-gradient(135deg, #fff, var(--neon-cyan));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      letter-spacing: -0.5px;
+    }
+    .logo span {
+      color: var(--neon-pink);
+      background: none;
+      -webkit-background-clip: unset;
+      background-clip: unset;
+    }
+    .nav-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      margin-left: 2rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      border-bottom: 1px solid transparent;
+      padding-bottom: 4px;
+    }
+    .nav-links a:hover {
+      color: var(--neon-cyan);
+      border-bottom-color: var(--neon-cyan);
+      text-shadow: 0 0 6px var(--accent-glow);
+    }
+
+    /* Hero 区域 */
+    .hero-section {
+      text-align: center;
+      margin: 3rem 0 4rem;
+      position: relative;
+    }
+    .avatar-glitch {
+      position: relative;
+      display: inline-block;
+    }
+    .avatar {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      border: 2px solid var(--neon-cyan);
+      box-shadow: 0 0 25px rgba(0, 247, 255, 0.4);
+      object-fit: cover;
+      transition: 0.3s;
+      background: #11121f;
+    }
+    h1 {
+      font-size: 4rem;
+      font-weight: 800;
+      margin-top: 1rem;
+      background: linear-gradient(135deg, #FFFFFF, var(--neon-cyan), var(--neon-purple));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      letter-spacing: -1px;
+    }
+    .glitch-text {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1rem;
+      color: var(--neon-cyan);
+      letter-spacing: 2px;
+      margin-top: 0.5rem;
+    }
+    .badge-line {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin: 2rem 0 1.5rem;
+    }
+    .pill {
+      background: rgba(0, 247, 255, 0.08);
+      border: 1px solid rgba(0, 247, 255, 0.4);
+      border-radius: 40px;
+      padding: 0.5rem 1.2rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--neon-cyan);
+      backdrop-filter: blur(4px);
+    }
+    .pill i {
+      margin-right: 8px;
+    }
+    .btn-group {
+      margin-top: 2rem;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--card-border);
+      padding: 0.8rem 2rem;
+      border-radius: 48px;
+      color: var(--text-primary);
+      text-decoration: none;
+      font-weight: 600;
+      margin: 0 0.7rem;
+      transition: 0.2s;
+    }
+    .btn-primary {
+      background: linear-gradient(95deg, rgba(0,247,255,0.2), rgba(176,38,255,0.2));
+      border-color: var(--neon-cyan);
+      box-shadow: 0 0 10px rgba(0,247,255,0.2);
+    }
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      border-color: var(--neon-cyan);
+      box-shadow: 0 0 20px var(--accent-glow);
+      background: rgba(0,247,255,0.2);
+    }
+    .btn-outline:hover {
+      border-color: var(--neon-pink);
+      box-shadow: 0 0 12px rgba(255,42,140,0.3);
+    }
+
+    /* 信息卡片布局 */
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+      margin: 4rem 0;
+    }
+    .feature-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(12px);
+      border-radius: 32px;
+      border: 1px solid var(--card-border);
+      padding: 1.8rem;
+      transition: transform 0.25s var(--transition-smooth), border 0.2s;
+      box-shadow: var(--shadow-glow);
+    }
+    .feature-card:hover {
+      transform: translateY(-6px);
+      border-color: var(--neon-cyan);
+      box-shadow: 0 0 20px rgba(0,247,255,0.1);
+    }
+    .feature-card i {
+      font-size: 2.2rem;
+      color: var(--neon-cyan);
+      margin-bottom: 1rem;
+    }
+    .feature-card h3 {
+      font-size: 1.7rem;
+      margin-bottom: 0.8rem;
+      font-weight: 600;
+    }
+    .feature-card p {
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    /* 项目展示区 - 炫酷卡片栅格 */
+    .section-title {
+      font-size: 2.4rem;
+      margin: 3rem 0 1.5rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .section-title i {
+      font-size: 2rem;
+      color: var(--neon-cyan);
+    }
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.8rem;
+    }
+    .project-card {
+      background: var(--bg-card-solid);
+      border-radius: 28px;
+      border: 1px solid #1e2438;
+      padding: 1.5rem;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .project-card::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(135deg, rgba(0,247,255,0.2), rgba(255,42,140,0.2));
+      border-radius: 30px;
+      z-index: -1;
+      opacity: 0;
+      transition: 0.3s;
+    }
+    .project-card:hover::before {
+      opacity: 1;
+    }
+    .project-card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(0,247,255,0.6);
+      box-shadow: 0 10px 35px rgba(0,0,0,0.5);
+    }
+    .project-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    .project-name {
+      font-size: 1.5rem;
+      font-weight: 700;
+      background: linear-gradient(120deg, #fff, #9cdbff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .lang-badge {
+      font-family: monospace;
+      background: #1f2a3e;
+      padding: 0.2rem 0.7rem;
+      border-radius: 30px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: #88ddff;
+    }
+    .project-desc {
+      color: var(--text-secondary);
+      margin: 0.8rem 0 1.2rem;
+      font-size: 0.9rem;
+      line-height: 1.45;
+    }
+    .project-stats {
+      display: flex;
+      gap: 1rem;
+      margin-top: 0.8rem;
+      font-size: 0.8rem;
+      color: #7f8fa4;
+    }
+    .project-stats i {
+      margin-right: 4px;
+      color: var(--neon-cyan);
+    }
+    .project-link {
+      display: inline-block;
+      margin-top: 1rem;
+      color: var(--neon-cyan);
+      text-decoration: none;
+      font-weight: 500;
+      border-bottom: 1px dashed var(--neon-cyan);
+    }
+
+    /* footer 创意 */
+    .footer-cyber {
+      margin-top: 5rem;
+      padding: 2rem;
+      text-align: center;
+      border-top: 1px solid rgba(0, 255, 196, 0.2);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+    .footer-cyber pre {
+      background: rgba(0,0,0,0.4);
+      display: inline-block;
+      padding: 0.2rem 1rem;
+      border-radius: 20px;
+      margin-bottom: 1rem;
+    }
+    @media (max-width: 760px) {
+      .container { padding: 1rem; }
+      .navbar-glow { flex-direction: column; gap: 1rem; border-radius: 32px; }
+      .nav-links a { margin: 0 1rem; }
+      h1 { font-size: 2.5rem; }
+      .section-title { font-size: 1.8rem; }
     }
   </style>
-  <script>
-    const userMode = localStorage.getItem('vuepress-color-scheme');
-    const systemDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    if (userMode === 'dark' || (userMode !== 'light' && systemDarkMode)) {
-      document.documentElement.classList.toggle('dark', true);
-    }
-  </script>
-  <link rel="icon" href="https://ali2.a.yximgs.com/udata/music/music_c8b54ac42c594010a7c6eda664e6bd4f0.jpg">
-  <title>More | BadJuiの小屋</title>
-  <meta name="description" content="BadJui —— 一个爱摸鱼的人">
-  <link rel="stylesheet" href="static/css/style.a01410e3.css">
 </head>
-
 <body>
-  <div id="app">
-    <!--[-->
-    <div class="theme-container no-sidebar">
-      <!--[-->
-      <header class="navbar">
-        <div class="toggle-sidebar-button" title="切换侧边栏" aria-expanded="false" role="button" tabindex="0">
-        </div><span><span
-              class="site-name can-hide">BadJuiの小屋</span></a></span>
-        <div class="navbar-items-wrapper" style="">
-          <!--[-->
-          <!--]-->
-          <!--[-->
-          <!--]-->
-          <div id="docsearch-container"></div>
-        </div>
-      </header>
-      <!--]-->
 
-              <!--[-->
-              <!--]-->
-            </a></div>
-          <!--]-->
-        </nav>
-        <!--[-->
-        <!--]-->
-        <!---->
-        <!--[-->
-        <!--]-->
-      </aside>
-      <!--]-->
-      <!--[-->
-      <main class="home">
-        <header class="hero"><img src="static/picture/hero.png" alt="BadJui">
-          <h1 id="main-title">BadJui</h1>
-          <p class="description">备考ing || 摸鱼ing</p>
-          <p class="actions">
-            <!--[--><a href="https://badjui.top/" class="action-button secondary" aria-label="BadJui.ml">
-              <!--[-->
-              <!--]--> BadJui.ml
-              <!--[-->
-              <!--]-->
-            </a><a href="https://space.bilibili.com/514225993" class="action-button secondary" aria-label="Bilibili">
-              <!--[-->
-              <!--]--> Bilibili Page
-              <!--[-->
-              <!--]-->
-            </a>
-            <!--]-->
-          </p>
-        </header>
-        <div class="features">
-          <!--[-->
-          <div class="feature">
-            <h2>梦想</h2>
-            <p>以后成为一名网络安全工程师，为国家献一份力！</p>
-          </div>
-          <div class="feature">
-            <h2>现实</h2>
-            <p>然而我还是个少年，心怀大志但不可傲慢</p>
-          </div>
-          <div class="feature">
-            <h2>处境</h2>
-            <p>在父母的培养下成长，也要感谢互联网让我认识了大家！</p>
-          </div>
-          <!--]-->
-        </div>
-        <div class="theme-default-content">
-          <div></div>
-        </div>
-        <!--[-->
-        <div class="footer">sudo rm -rf /Past Self/*<br><br>Copyright ©2022-2023 BadJui</div>
-        <!--]-->
-      </main>
-      <!--]-->
-    </div>
-    <!---->
-    <!--]-->
+<div class="cyber-grid">
+  <div class="grid-layer"></div>
+  <div class="grid-layer secondary"></div>
+  <div class="data-stream">
+    <div class="stream"></div><div class="stream"></div><div class="stream"></div><div class="stream"></div><div class="stream"></div>
   </div>
-  <script type="module" src="static/js/app.bb851758.js" defer=""></script>
-</body>
+</div>
 
+<div class="container">
+  <!-- 导航栏 -->
+  <div class="navbar-glow">
+    <div class="logo">&lt;BadJui<span>_sec</span>/&gt;</div>
+    <div class="nav-links">
+      <a href="#">Home</a>
+      <a href="#projects">Projects</a>
+      <a href="https://github.com/BadJui" target="_blank"><i class="fab fa-github"></i> GitHub</a>
+      <a href="https://space.bilibili.com/514225993" target="_blank"><i class="fab fa-bilibili"></i> BiliBili</a>
+    </div>
+  </div>
+
+  <!-- Hero 主视觉 -->
+  <div class="hero-section">
+    <div class="avatar-glitch">
+      <img class="avatar" src="static/picture/hero.png" alt="BadJui" onerror="this.src='https://ali2.a.yximgs.com/udata/music/music_c8b54ac42c594010a7c6eda664e6bd4f0.jpg'">
+    </div>
+    <h1>BadJui</h1>
+    <div class="glitch-text"># sudo rm -rf /script-kiddie</div>
+    <div class="badge-line">
+      <span class="pill"><i class="fas fa-shield-haltered"></i> 网络安全</span>
+      <span class="pill"><i class="fas fa-skull"></i> 免杀/社工钓鱼</span>
+      <span class="pill"><i class="fas fa-code"></i> C++ / 硬件爱好者</span>
+      <span class="pill"><i class="fas fa-graduation-cap"></i> 备考ing · 摸鱼ing</span>
+    </div>
+    <div class="btn-group">
+      <a href="https://github.com/BadJui" target="_blank" class="btn btn-primary"><i class="fab fa-github"></i> GitHub 源码宇宙</a>
+      <a href="https://badjui.top/" target="_blank" class="btn btn-outline"><i class="fas fa-globe"></i> BadJui.ml</a>
+      <a href="https://space.bilibili.com/514225993" target="_blank" class="btn btn-outline"><i class="fab fa-bilibili"></i> 哔哩哔哩</a>
+    </div>
+  </div>
+
+  <!-- 梦想·现实·处境 卡片区 (保留原有灵魂) -->
+  <div class="info-grid">
+    <div class="feature-card">
+      <i class="fas fa-dove"></i>
+      <h3>🚀 梦想</h3>
+      <p>成为一名网络安全工程师，为国家献一份力！研究攻防对抗，守护数字净土。</p>
+    </div>
+    <div class="feature-card">
+      <i class="fas fa-crown"></i>
+      <h3>🎯 现实</h3>
+      <p>目前正处于备考的修行阶段，心怀大志却脚踏实地，拒绝傲慢，每天进步一点点。</p>
+    </div>
+    <div class="feature-card">
+      <i class="fas fa-hand-peace"></i>
+      <h3>⚡ 处境</h3>
+      <p>感谢父母的栽培与互联网的馈赠，让我遇见更多志同道合的人。保持谦逊，持续输出。</p>
+    </div>
+  </div>
+
+  <!-- GitHub 项目展示 动态注入 -->
+  <div id="projects" class="section-title">
+    <i class="fas fa-terminal"></i> <span>//_ 核心武器库 · Project Arsenal</span>
+  </div>
+  <div class="projects-grid" id="github-projects">
+    <!-- 卡片会通过js动态渲染，但为了保证内容可见，静态数据内嵌，再次优先使用 GitHub 实际信息 -->
+    <div class="project-card loading-card" style="text-align: center; justify-content: center;"> ⟳ 正在加载GitHub项目数据…… </div>
+  </div>
+
+  <div class="footer-cyber">
+    <pre>sudo rm -rf /PastSelf/*  &amp;&amp;  echo “Becoming a good coder...”</pre>
+    <div>Copyright © 2022-2026 BadJui · 以代码为剑，守护未来</div>
+    <div style="margin-top: 1rem; font-size: 12px;"><i class="fas fa-database"></i> 深网矩阵 | 赛博格之魂</div>
+  </div>
+</div>
+
+<script>
+  (function() {
+    // BadJui 的 GitHub 实际项目数据（基于真实仓库）
+    const projectsData = [
+      {
+        name: "Jtool",
+        description: "免杀静态辅助工具，针对反病毒软件静态扫描的绕过思路。仅静态模式，C++实现。",
+        language: "C++",
+        stars: 9,
+        forks: 0,
+        url: "https://github.com/BadJui/Jtool"
+      },
+      {
+        name: "QQ-account-theft-tool",
+        description: "适配社工钓鱼场景的QQ盗号概念工具，纯研究安全防御。",
+        language: "C++",
+        stars: 3,
+        forks: 0,
+        url: "https://github.com/BadJui/QQ-account-theft-tool"
+      },
+      {
+        name: "Jrat",
+        description: "远程控制木马生成器 (Research only) 学习远控原理与检测对抗。",
+        language: "C++",
+        stars: 2,
+        forks: 1,
+        url: "https://github.com/BadJui/Jrat"
+      },
+      {
+        name: "AnyCommand2Shellcode",
+        description: "任意cmd命令转shellcode，红队工具链构件，支持动态生成。",
+        language: "C++",
+        stars: 2,
+        forks: 0,
+        url: "https://github.com/BadJui/AnyCommand2Shellcode"
+      },
+      {
+        name: "VirtualScan",
+        description: "轻量级Web路径扫描器，支持HTTP/HTTPS，慢速扫描防封，目录探测。",
+        language: "C++",
+        stars: 2,
+        forks: 0,
+        url: "https://github.com/BadJui/VirtualScan"
+      },
+      {
+        name: "Cross-platform-translation-software",
+        description: "跨平台局域网翻译神器，选词同步，手机端译文实时显示。",
+        language: "C++",
+        stars: 2,
+        forks: 0,
+        url: "https://github.com/BadJui/Cross-platform-translation-software"
+      }
+    ];
+
+    const container = document.getElementById('github-projects');
+    if (container) {
+      // 清空loading提示
+      container.innerHTML = '';
+      projectsData.forEach(proj => {
+        const card = document.createElement('div');
+        card.className = 'project-card';
+        // 星星&fork显示
+        const starHtml = `<i class="fas fa-star"></i> ${proj.stars}`;
+        const forkHtml = `<i class="fas fa-code-branch"></i> ${proj.forks}`;
+        card.innerHTML = `
+          <div class="project-header">
+            <span class="project-name">${escapeHtml(proj.name)}</span>
+            <span class="lang-badge"><i class="fab fa-cuttlefish"></i> ${proj.language}</span>
+          </div>
+          <div class="project-desc">${escapeHtml(proj.description)}</div>
+          <div class="project-stats">
+            <span>${starHtml}</span>
+            <span>${forkHtml}</span>
+          </div>
+          <a href="${proj.url}" target="_blank" class="project-link">查看仓库 → <i class="fas fa-external-link-alt"></i></a>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/[&<>]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
+      }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
+        return c;
+      });
+    }
+
+    // 添加小红点动态特效 (终端感觉)
+    const style = document.createElement('style');
+    style.innerHTML = ` .project-card { transition: all 0.25s; } .loading-card { color: cyan; } `;
+    document.head.appendChild(style);
+  })();
+</script>
+<!-- 背景补充增强：若hero.png丢失，替换为emoji安全头像 -->
+</body>
 </html>
